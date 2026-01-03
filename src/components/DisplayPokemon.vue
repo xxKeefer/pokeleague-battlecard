@@ -21,7 +21,7 @@ const pokemon = computed(() => {
           v-for="typing in pokemon.types"
           :key="typing.name"
           :class="[
-            'w-min min-w-24 rounded-sm px-2 py-0.5 text-center text-xs font-bold text-white uppercase',
+            'w-min min-w-20 rounded-sm px-2 py-0.5 text-center text-xs font-bold text-white uppercase',
             typing.color,
           ]"
           >{{ typing.name }}</span
