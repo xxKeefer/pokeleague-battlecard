@@ -11,10 +11,10 @@ export const useTeamStore = defineStore('team', () => {
 
   const team = ref<TeamSlot[]>([])
 
-  function setPokemon(newPokemon: PokeAPI.Pokemon) {
+  function setPokemon(newPokemon: PokeAPI.Pokemon, position?: TeamSlot['position']) {
     if (team.value.length >= MAX_SLOTS) return
 
-    const { name, id, sprites, stats, types } = newPokemon
+    const { name, id, sprites, stats, types, species } = newPokemon
 
     const processedTypes: Typing[] = types.map((x) => ({
       name: x.type.name,
@@ -22,22 +22,32 @@ export const useTeamStore = defineStore('team', () => {
     }))
 
     const pokemon: TeamSlot['pokemon'] = {
-      name: name.split('-')[0] ?? '',
+      name: name.split('-').join(' ') ?? '',
       id,
       stats,
       types: processedTypes,
       sprite: sprites.front_default,
+      species,
     }
-
-    team.value.push({
-      pokemon,
-      // temp position — watcher will normalize
-      position: 0 as TeamSlot['position'],
-    })
+    if (position !== undefined) {
+      const target = team.value.find((x) => x.position === position)!
+      target.pokemon = { ...pokemon, nickname: target.pokemon?.nickname }
+    } else {
+      team.value.push({
+        pokemon,
+        // temp position — watcher will normalize
+        position: 0 as TeamSlot['position'],
+      })
+    }
   }
 
   function clearPokemon(position: TeamSlot['position']) {
     team.value = team.value.filter((x) => x.position !== position)
+  }
+
+  function updateNickname(position: TeamSlot['position'], nickname: string) {
+    const target = team.value.find((x) => x.position === position)!
+    target.pokemon!.nickname = nickname === '' ? undefined : nickname
   }
 
   function clampPosition(position: number): TeamSlot['position'] {
@@ -118,6 +128,7 @@ export const useTeamStore = defineStore('team', () => {
     team,
     setPokemon,
     clearPokemon,
+    updateNickname,
     positionAt,
     shiftUp,
     shiftDown,

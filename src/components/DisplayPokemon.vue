@@ -15,6 +15,7 @@ const pokemon = computed(() => {
   <div v-if="pokemon" class="flex items-stretch gap-2 px-2">
     <div class="flex items-center justify-start gap-2">
       <span class="text-xl font-extrabold capitalize">{{ pokemon.name }}</span>
+
       <div class="flex gap-1">
         <span
           v-for="typing in pokemon.types"

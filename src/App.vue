@@ -19,7 +19,7 @@ const savePokedexPng = async () => {
   const dataUrl = await toPng(pokedexRef.value, {
     cacheBust: true,
     pixelRatio: 2, // nicer quality export
-    backgroundColor: '#ef4444', // matches Tailwind red-500
+    backgroundColor: '#00000000', // matches Tailwind red-500
   })
 
   const link = document.createElement('a')
@@ -35,7 +35,7 @@ const savePokedexPng = async () => {
       <div class="flex flex-col gap-4">
         <PokemonSearch />
         <button
-          class="mb-3 rounded-sm bg-slate-900 px-3 py-1 text-sm font-bold text-white"
+          class="mb-3 rounded-sm bg-slate-900 px-3 py-1 text-sm font-bold text-white hover:cursor-pointer hover:bg-slate-800"
           @click="savePokedexPng"
         >
           Save as PNG
@@ -58,9 +58,21 @@ const savePokedexPng = async () => {
             <div class="a z-50 grid grid-cols-[auto_1fr] items-start gap-x-4 gap-y-1">
               <template v-for="slot in team.team" :key="slot.position">
                 <!-- Column 1: name -->
-                <span v-if="slot.pokemon" class="text-2xl font-extrabold capitalize">
-                  {{ slot.pokemon.name }}
-                </span>
+
+                <div v-if="slot.pokemon" class="flex flex-col gap-0">
+                  <span
+                    :class="[
+                      'm-0 leading-snug font-extrabold capitalize',
+                      slot.pokemon?.nickname ? 'text-lg' : 'text-2xl',
+                    ]"
+                    >{{ slot.pokemon.nickname ?? slot.pokemon.name }}</span
+                  >
+                  <span
+                    v-if="slot.pokemon.nickname"
+                    class="font-mono text-sm leading-none font-semibold capitalize"
+                    >{{ slot.pokemon.name }}</span
+                  >
+                </div>
 
                 <!-- Column 2: chips -->
                 <div
@@ -71,7 +83,7 @@ const savePokedexPng = async () => {
                     v-for="typing in slot.pokemon.types"
                     :key="typing.name"
                     :class="[
-                      'w-min min-w-20 rounded-sm border border-cyan-950 px-2 py-0.5 text-center text-xs font-bold text-white uppercase',
+                      'text-md z-50 w-min min-w-20 rounded-sm border border-cyan-950 px-2 py-0.5 text-center font-bold text-white uppercase',
                       typing.color,
                     ]"
                   >

@@ -1,8 +1,9 @@
 import type { PokeAPI } from 'pokeapi-types'
 
-type PokemonData = Pick<PokeAPI.Pokemon, 'name' | 'id' | 'stats'> & {
+type PokemonData = Pick<PokeAPI.Pokemon, 'name' | 'id' | 'stats' | 'species'> & {
   sprite: string
   types: Typing[]
+  nickname?: string
 }
 
 export interface TeamSlot {

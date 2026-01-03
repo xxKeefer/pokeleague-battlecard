@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { fetchPokemon } from '@/api/pokeApi'
 import { useTeamStore } from '@/stores/teamStore'
 import { TypeColors } from '@/types/pokemon'
-import { PhQuestion } from '@phosphor-icons/vue'
+import { PhQuestion, PhInfo } from '@phosphor-icons/vue'
 
 const team = useTeamStore()
 const queryText = ref('')
@@ -61,15 +61,27 @@ function applyResult() {
         placeholder="pikachu / 25"
         @keyup.enter="applyResult"
       />
-
-      <button
-        class="bg-gray-400 px-2 py-1 hover:bg-gray-200"
-        :disabled="isLoading || !data"
-        @click="applyResult"
-      >
-        Add
-      </button>
     </div>
+    <div
+      class="flex w-md items-start justify-start gap-2 rounded border-2 border-cyan-500 bg-cyan-100 p-2"
+    >
+      <PhInfo :size="64" :weight="'fill'" class="text-cyan-500" />
+
+      <span class="text-xs font-semibold"
+        >If the pokemon you are searching for has a form (regional, stance, etc...) I recommend to
+        search via id, or add the suffix
+        <pre class="inline w-min rounded bg-yellow-300 px-1 py-0.5 font-mono">-{form}</pre>
+        to the name. eg:
+        <pre class="inline w-min rounded bg-yellow-300 px-1 py-0.5 font-mono">charizard-mega-x</pre>
+      </span>
+    </div>
+    <button
+      class="w-full rounded-sm bg-slate-900 px-3 py-1 text-sm font-bold text-white hover:cursor-pointer hover:bg-slate-800"
+      :disabled="isLoading || !data"
+      @click="applyResult"
+    >
+      Add
+    </button>
 
     <span v-if="isLoading">Searching…</span>
     <span v-if="isError" class="text-red-500"> Not found </span>
@@ -93,13 +105,16 @@ function applyResult() {
         </div>
       </div>
     </div>
+
     <div
       v-else
-      class="flex min-h-[100px] items-stretch gap-2 rounded-sm border-2 border-gray-300 p-2"
+      class="flex min-h-[100px] max-w-[200px] flex-col items-stretch gap-2 rounded-sm border-2 border-gray-300 p-2"
     >
-      <PhQuestion :size="32" />
-      <div class="flex flex-col justify-start gap-2">
-        <span class="text-xl font-extrabold capitalize">Searching...</span>
+      <div class="flex gap-2">
+        <PhQuestion :size="32" />
+        <div class="flex flex-col justify-start gap-2">
+          <span class="text-xl font-extrabold capitalize">Searching...</span>
+        </div>
       </div>
     </div>
   </div>
