@@ -6,6 +6,7 @@ import DisplayPokemon from './DisplayPokemon.vue'
 import { computed } from 'vue'
 import { useMutation } from '@tanstack/vue-query'
 import { fetchEndpoint } from '@/api/pokeApi'
+import type { PokeAPI } from 'pokeapi-types'
 
 const props = defineProps<{ position: TeamSlot['position'] }>()
 const team = useTeamStore()
@@ -15,7 +16,7 @@ const pokemon = computed(() => team.at(props.position))
 const variantOptions = computed(() => pokemon.value.varieties ?? [])
 
 const variantMutation = useMutation({
-  mutationFn: (url: string) => fetchEndpoint<PokeAPI.PokemonSpecies>(url),
+  mutationFn: (url: string) => fetchEndpoint<PokeAPI.Pokemon>(url),
   onSuccess: (newPokemon) => {
     team.setPokemon(newPokemon, props.position)
   },
