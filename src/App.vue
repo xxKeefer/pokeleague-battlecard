@@ -44,7 +44,7 @@ const savePokedexPng = async () => {
       <TeamList />
     </div>
     <div ref="pokedexRef" class="w-fit bg-gray-200 p-2">
-      <div class="w-fit rounded-sm bg-red-500 p-4 pt-2">
+      <div class="w-fit rounded-sm border-4 border-red-400 bg-red-500 p-4 pt-2">
         <div class="flex gap-8">
           <PokedexLens class="pb-2" />
           <div class="flex max-w-[565px] flex-col justify-center gap-1 pb-2">
