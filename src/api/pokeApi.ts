@@ -1,6 +1,6 @@
 import type { PokeAPI } from 'pokeapi-types'
 
-const API = 'https://pokeapi.co/api/v2/'
+const API = 'https://pokeapi.co/api/v2'
 
 export async function fetchPokemon(nameOrId: string): Promise<PokeAPI.Pokemon> {
   const res = await fetch(`${API}/pokemon/${nameOrId.toLowerCase()}`)
@@ -20,7 +20,7 @@ export async function fetchPokemonSpecies(id: string): Promise<PokeAPI.PokemonSp
 
   return await res.json()
 }
-export async function fetchEndpoint(endpoint: string): Promise<PokeAPI.Pokemon> {
+export async function fetchEndpoint<T>(endpoint: string): Promise<T> {
   const res = await fetch(endpoint)
 
   if (!res.ok) {

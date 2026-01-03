@@ -4,6 +4,7 @@ type PokemonData = Pick<PokeAPI.Pokemon, 'name' | 'id' | 'stats' | 'species'> & 
   sprite: string
   types: Typing[]
   nickname?: string
+  varieties: PokeAPI.NamedAPIResource[]
 }
 
 export interface TeamSlot {

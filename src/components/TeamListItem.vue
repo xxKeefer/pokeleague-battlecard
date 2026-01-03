@@ -3,51 +3,41 @@ import { useTeamStore } from '@/stores/teamStore'
 import { type TeamSlot } from '@/types/pokemon'
 import { PhTrash, PhArrowLineUp, PhArrowLineDown } from '@phosphor-icons/vue'
 import DisplayPokemon from './DisplayPokemon.vue'
-import { computed, ref, watch } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
-import { fetchEndpoint, fetchPokemonSpecies } from '@/api/pokeApi'
+import { computed } from 'vue'
+import { useMutation } from '@tanstack/vue-query'
+import { fetchEndpoint } from '@/api/pokeApi'
 
-const props = defineProps<{ position: TeamSlot['position']; pokemon: TeamSlot['pokemon'] }>()
-
+const props = defineProps<{ position: TeamSlot['position'] }>()
 const team = useTeamStore()
 
-const species = useQuery({
-  queryKey: ['species', props.pokemon?.id],
-  queryFn: () => fetchPokemonSpecies(props.pokemon?.id + ''),
-  enabled: !!props.pokemon?.id, // only runs when text is non-empty
-  retry: false,
-})
+const pokemon = computed(() => team.at(props.position))
 
-const variations = computed(() => {
-  return species.data.value?.varieties.map((x) => x.pokemon) ?? []
-})
+const variantOptions = computed(() => pokemon.value.varieties ?? [])
 
-const selectedVariation = ref<string | null>(props.pokemon?.name ?? null)
-const variantUrl = computed(() => {
-  return variations.value.find((x) => x.name === selectedVariation.value)?.url ?? null
-})
-
-const selectedVariant = useQuery({
-  queryKey: computed(() => ['byEndpoint', variantUrl.value]),
-  queryFn: () => fetchEndpoint(variantUrl.value!),
-  enabled: computed(() => !!variantUrl.value),
-  retry: false,
-})
-
-watch(
-  () => selectedVariant.data.value,
-  (next) => {
-    console.log(next)
-    if (!next) return
-    team.setPokemon(next, props.position)
+const variantMutation = useMutation({
+  mutationFn: (url: string) => fetchEndpoint<PokeAPI.PokemonSpecies>(url),
+  onSuccess: (newPokemon) => {
+    team.setPokemon(newPokemon, props.position)
   },
-)
+})
 
-const nickname = ref('')
-const nameOverride = ref(props.pokemon?.name ?? '')
+function onVariantChange(event: Event) {
+  const target = event.target as HTMLSelectElement | null
+  if (!target) return
+  const url = target.value
+  if (!url) return
+  variantMutation.mutate(url)
+}
 
-watch(nickname, (next) => team.updateNickname(props.position, next))
-watch(nameOverride, (next) => team.overrideName(props.position, next))
+const nickname = computed({
+  get: () => pokemon.value?.nickname ?? '',
+  set: (v: string) => team.updateNickname(props.position, v),
+})
+
+const nameOverride = computed({
+  get: () => pokemon.value?.name ?? '',
+  set: (v: string) => team.overrideName(props.position, v),
+})
 
 function clear() {
   team.clearPokemon(props.position)
@@ -80,6 +70,7 @@ function moveDown() {
         </button>
       </div>
     </div>
+
     <div class="flex gap-2">
       <div class="mr-2 flex items-center gap-2">
         <label for="nickname">Nickname </label>
@@ -91,25 +82,12 @@ function moveDown() {
       </div>
       <div class="mr-2 flex items-center gap-2">
         <label for="variant">Variant Form </label>
-        <select
-          v-if="variations.length"
-          name="variant"
-          v-model="selectedVariation"
-          class="mr-2 border px-2"
-        >
-          <option v-for="poke in variations" :key="poke.name" :value="poke.name">
-            {{ poke.name }}
+        <select v-if="variantOptions.length" class="mr-2 border px-2" @change="onVariantChange">
+          <option v-for="v in variantOptions" :key="v.name" :value="v.url">
+            {{ v.name }}
           </option>
         </select>
       </div>
     </div>
   </div>
 </template>
-
-<!-- 
-TODO:
-3. add pokedex layout for team, inc. team name trainer name
-4. add pie chart for types
-5. add radio chart for total stats
-6. add gradient separators
--->

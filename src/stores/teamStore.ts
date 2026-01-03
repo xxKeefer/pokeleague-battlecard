@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import { type TrainerTeam, type TeamSlot, TypeColors, type Typing } from '@/types/pokemon'
 import type { PokeAPI } from 'pokeapi-types'
+import { fetchEndpoint } from '@/api/pokeApi'
 
 const MAX_SLOTS = 10 as const
 
@@ -11,34 +12,36 @@ export const useTeamStore = defineStore('team', () => {
 
   const team = ref<TeamSlot[]>([])
 
-  function setPokemon(newPokemon: PokeAPI.Pokemon, position?: TeamSlot['position']) {
-    if (team.value.length >= MAX_SLOTS) return
+  async function setPokemon(newPokemon: PokeAPI.Pokemon, position?: TeamSlot['position']) {
+    // fetch species for variants
+    const species = await fetchEndpoint<PokeAPI.PokemonSpecies>(newPokemon.species.url)
+    const varieties = species.varieties.map((v) => v.pokemon)
 
-    const { name, id, sprites, stats, types, species } = newPokemon
-
-    const processedTypes: Typing[] = types.map((x) => ({
+    const processedTypes: Typing[] = newPokemon.types.map((x) => ({
       name: x.type.name,
       color: TypeColors[x.type.name as keyof typeof TypeColors],
     }))
 
-    const pokemon: TeamSlot['pokemon'] = {
-      name: name.split('-').join(' ') ?? '',
-      id,
-      stats,
+    const pokemonData: TeamSlot['pokemon'] = {
+      name: newPokemon.name.split('-').join(' '),
+      id: newPokemon.id,
+      stats: newPokemon.stats,
       types: processedTypes,
-      sprite: sprites.front_default,
-      species,
+      sprite: newPokemon.sprites.front_default,
+      species: newPokemon.species,
+      varieties,
     }
+
     if (position !== undefined) {
       const target = team.value.find((x) => x.position === position)!
-      target.pokemon = { ...pokemon, nickname: target.pokemon?.nickname }
+      target.pokemon = { ...pokemonData, nickname: target.pokemon?.nickname }
     } else {
-      team.value.push({
-        pokemon,
-        // temp position — watcher will normalize
-        position: 0 as TeamSlot['position'],
-      })
+      team.value.push({ pokemon: pokemonData, position: 0 as TeamSlot['position'] })
     }
+  }
+
+  function at(position: TeamSlot['position']) {
+    return team.value.find((x) => x.position === position)!.pokemon!
   }
 
   function clearPokemon(position: TeamSlot['position']) {
@@ -131,6 +134,7 @@ export const useTeamStore = defineStore('team', () => {
     trainerName,
     team,
     setPokemon,
+    at,
     clearPokemon,
     updateNickname,
     overrideName,
