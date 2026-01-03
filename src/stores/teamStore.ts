@@ -49,6 +49,10 @@ export const useTeamStore = defineStore('team', () => {
     const target = team.value.find((x) => x.position === position)!
     target.pokemon!.nickname = nickname === '' ? undefined : nickname
   }
+  function overrideName(position: TeamSlot['position'], name: string) {
+    const target = team.value.find((x) => x.position === position)!
+    target.pokemon!.name = name
+  }
 
   function clampPosition(position: number): TeamSlot['position'] {
     const clamped = Math.min(Math.max(position, 1), MAX_SLOTS)
@@ -129,6 +133,7 @@ export const useTeamStore = defineStore('team', () => {
     setPokemon,
     clearPokemon,
     updateNickname,
+    overrideName,
     positionAt,
     shiftUp,
     shiftDown,

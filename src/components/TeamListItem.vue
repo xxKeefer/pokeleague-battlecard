@@ -44,8 +44,10 @@ watch(
 )
 
 const nickname = ref('')
+const nameOverride = ref(props.pokemon?.name ?? '')
 
 watch(nickname, (next) => team.updateNickname(props.position, next))
+watch(nameOverride, (next) => team.overrideName(props.position, next))
 
 function clear() {
   team.clearPokemon(props.position)
@@ -82,6 +84,10 @@ function moveDown() {
       <div class="mr-2 flex items-center gap-2">
         <label for="nickname">Nickname </label>
         <input name="nickname" v-model="nickname" class="border px-2" placeholder="Spot" />
+      </div>
+      <div class="mr-2 flex items-center gap-2">
+        <label for="override">Name Override</label>
+        <input name="override" v-model="nameOverride" class="border px-2" placeholder="Spot" />
       </div>
       <div class="mr-2 flex items-center gap-2">
         <label for="variant">Variant Form </label>
