@@ -83,7 +83,7 @@ const savePokedexPng = async () => {
                     v-for="typing in slot.pokemon.types"
                     :key="typing.name"
                     :class="[
-                      'text-md z-50 w-min min-w-20 rounded-sm border border-cyan-950 px-2 py-0.5 text-center font-bold text-white uppercase',
+                      'text-md z-50 w-min min-w-24 rounded-sm border border-cyan-950 px-2 py-0.5 text-center font-bold text-white uppercase',
                       typing.color,
                     ]"
                   >
