@@ -65,7 +65,7 @@ function applyResult() {
     <div
       class="flex w-md items-start justify-start gap-2 rounded border-2 border-cyan-500 bg-cyan-100 p-2"
     >
-      <PhInfo :size="64" :weight="'fill'" class="text-cyan-500" />
+      <PhInfo :size="32" :weight="'fill'" class="shrink-0 text-cyan-500" />
 
       <span class="text-xs font-semibold"
         >If the pokemon you are searching for has a form (regional, stance, etc...) I recommend to

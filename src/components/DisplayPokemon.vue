@@ -16,7 +16,7 @@ const pokemon = computed(() => {
     <div class="flex items-center justify-start gap-2">
       <span class="text-xl font-extrabold capitalize">{{ pokemon.name }}</span>
 
-      <div class="flex gap-1">
+      <div class="flex flex-nowrap gap-1">
         <span
           v-for="typing in pokemon.types"
           :key="typing.name"

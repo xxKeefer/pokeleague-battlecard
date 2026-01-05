@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useTeamStore } from '@/stores/teamStore'
-import TeamLayout from '@/components/team-layout'
 import { computed } from 'vue'
 import PokedexScreen from './pokedex/PokedexScreen.vue'
 
@@ -19,31 +18,31 @@ const rowThree = computed(() => {
 
 <template>
   <PokedexScreen>
-    <TeamLayout>
-      <TeamLayout.MainRow>
+    <div class="flex h-full flex-col justify-center gap-4 pb-4">
+      <div class="grid grid-cols-3 justify-items-center gap-4">
         <img
           v-for="mon in rowOne"
           :key="mon.pokemon?.id"
           :src="mon.pokemon?.sprite"
           class="z-50 h-[123px] w-auto"
         />
-      </TeamLayout.MainRow>
-      <TeamLayout.MainRow>
+      </div>
+      <div class="grid grid-cols-3 justify-items-center gap-4">
         <img
           v-for="mon in rowTwo"
           :key="mon.pokemon?.id"
           :src="mon.pokemon?.sprite"
           class="z-50 h-[123px] w-auto"
         />
-      </TeamLayout.MainRow>
-      <TeamLayout.BackUpRow>
+      </div>
+      <div class="grid grid-cols-4 justify-items-center gap-4">
         <img
           v-for="mon in rowThree"
           :key="mon.pokemon?.id"
           :src="mon.pokemon?.sprite"
           class="z-50 h-[92px] w-auto"
         />
-      </TeamLayout.BackUpRow>
-    </TeamLayout>
+      </div>
+    </div>
   </PokedexScreen>
 </template>

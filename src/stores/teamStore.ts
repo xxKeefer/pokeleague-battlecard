@@ -1,6 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
-import { type TrainerTeam, type TeamSlot, TypeColors, type Typing } from '@/types/pokemon'
+import {
+  type TrainerTeam,
+  type TeamSlot,
+  TypeColors,
+  type Typing,
+  TypeHexColors,
+} from '@/types/pokemon'
 import type { PokeAPI } from 'pokeapi-types'
 import { fetchEndpoint } from '@/api/pokeApi'
 
@@ -20,6 +26,7 @@ export const useTeamStore = defineStore('team', () => {
     const processedTypes: Typing[] = newPokemon.types.map((x) => ({
       name: x.type.name,
       color: TypeColors[x.type.name as keyof typeof TypeColors],
+      hex: TypeHexColors[x.type.name as keyof typeof TypeHexColors],
     }))
 
     const pokemonData: TeamSlot['pokemon'] = {

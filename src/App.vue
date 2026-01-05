@@ -4,14 +4,19 @@ import { toPng } from 'html-to-image'
 
 import PokemonSearch from '@/components/PokemonSearch.vue'
 import TeamList from '@/components/TeamList.vue'
-import TeamDisplay from './components/TeamDisplay.vue'
+import TeamDisplay from '@/components/TeamDisplay.vue'
+import { useTeamStore } from '@/stores/teamStore'
+import PokedexLens from '@/components/pokedex/PokedexLens.vue'
+import TeamRoster from '@/components/TeamRoster.vue'
+import TeamTypeChart from './components/TeamTypeChart.vue'
 import PokedexScreen from './components/pokedex/PokedexScreen.vue'
-import { useTeamStore } from './stores/teamStore'
-import PokedexLens from './components/pokedex/PokedexLens.vue'
+import TeamStatChart from './components/TeamStatChart.vue'
+import { PhInfo } from '@phosphor-icons/vue'
 
 const team = useTeamStore()
 
 const pokedexRef = ref<HTMLElement | null>(null)
+const nameWidth = ref(565)
 
 const savePokedexPng = async () => {
   if (!pokedexRef.value) return
@@ -34,6 +39,20 @@ const savePokedexPng = async () => {
     <div class="flex gap-8 pb-4">
       <div class="flex flex-col gap-4">
         <PokemonSearch />
+        <div class="flex items-center gap-2">
+          <label for="wrapName">Trainer Name Wrap Length (px) </label>
+          <input name="wrapName" v-model="nameWidth" class="border px-2" placeholder="565" />
+        </div>
+        <div
+          class="flex w-md items-start justify-start gap-2 rounded border-2 border-cyan-500 bg-cyan-100 p-2"
+        >
+          <PhInfo :size="32" :weight="'fill'" class="shrink-0 text-cyan-500" />
+
+          <span class="text-xs font-semibold"
+            >If your team name is wrapping too early or jutting out past the graph, play with the
+            Trainer Name Wrap Length number.
+          </span>
+        </div>
         <button
           class="mb-3 rounded-sm bg-slate-900 px-3 py-1 text-sm font-bold text-white hover:cursor-pointer hover:bg-slate-800"
           @click="savePokedexPng"
@@ -47,50 +66,34 @@ const savePokedexPng = async () => {
       <div class="w-fit rounded-sm border-4 border-red-400 bg-red-500 p-4 pt-2">
         <div class="flex gap-8">
           <PokedexLens class="pb-2" />
-          <div class="flex max-w-[565px] flex-col justify-center gap-1 pb-2">
-            <span class="text-xl font-semibold capitalize">{{ team.trainerName }}</span>
-            <span class="text-4xl font-black uppercase">{{ team.teamName }}</span>
+          <div
+            :style="{ maxWidth: nameWidth + 'px' }"
+            class="flex flex-col justify-center gap-1 py-2"
+          >
+            <span class="text-lg leading-0 font-semibold capitalize">{{ team.trainerName }}</span>
+            <span class="text-6xl font-black uppercase">{{ team.teamName }}</span>
           </div>
         </div>
+
         <div class="flex w-fit gap-4">
           <TeamDisplay />
-          <PokedexScreen class="px-4 py-2">
-            <div class="a z-50 grid grid-cols-[auto_1fr] items-start gap-x-4 gap-y-1">
-              <template v-for="slot in team.team" :key="slot.position">
-                <!-- Column 1: name -->
-
-                <div v-if="slot.pokemon" class="flex flex-col gap-0">
-                  <span
-                    :class="[
-                      'm-0 leading-snug font-extrabold capitalize',
-                      slot.pokemon?.nickname ? 'text-lg' : 'text-2xl',
-                    ]"
-                    >{{ slot.pokemon.nickname ?? slot.pokemon.name }}</span
-                  >
-                  <span
-                    v-if="slot.pokemon.nickname"
-                    class="font-mono text-sm leading-none font-semibold capitalize"
-                    >{{ slot.pokemon.name }}</span
-                  >
-                </div>
-
-                <!-- Column 2: chips -->
-                <div
-                  v-if="slot.pokemon"
-                  class="flex flex-wrap gap-1 place-self-center justify-self-start"
-                >
-                  <span
-                    v-for="typing in slot.pokemon.types"
-                    :key="typing.name"
-                    :class="[
-                      'text-md z-50 w-min min-w-24 rounded-sm border border-cyan-950 px-2 py-0.5 text-center font-bold text-white uppercase',
-                      typing.color,
-                    ]"
-                  >
-                    {{ typing.name }}
-                  </span>
-                </div>
-              </template>
+          <TeamRoster />
+          <PokedexScreen class="flex flex-col items-center justify-start gap-8 p-2">
+            <div class="flex flex-col items-center gap-2">
+              <span class="font-mono text-sm leading-none font-semibold capitalize"
+                >Type Breakdown</span
+              >
+              <div class="h-[164px] w-[164px]">
+                <TeamTypeChart />
+              </div>
+            </div>
+            <div class="flex flex-col items-center gap-0">
+              <span class="font-mono text-sm leading-none font-semibold capitalize"
+                >Aggregate Base Stats</span
+              >
+              <div class="h-[164px] w-[164px]">
+                <TeamStatChart />
+              </div>
             </div>
           </PokedexScreen>
         </div>
