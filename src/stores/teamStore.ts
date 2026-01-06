@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import {
   type TrainerTeam,
   type TeamSlot,
@@ -17,6 +17,30 @@ export const useTeamStore = defineStore('team', () => {
   const trainerName = ref<TrainerTeam['trainerName']>("Misty's")
 
   const team = ref<TeamSlot[]>([])
+
+  const statTotals = computed(() => {
+    const totals: Record<string, number> = {
+      hp: 0,
+      attack: 0,
+      defense: 0,
+      'special-attack': 0,
+      'special-defense': 0,
+      speed: 0,
+    }
+
+    for (const slot of team.value) {
+      if (!slot.pokemon) continue
+
+      for (const stat of slot.pokemon.stats) {
+        const key = stat.stat.name
+        if (totals[key] !== undefined) {
+          totals[key] += stat.base_stat
+        }
+      }
+    }
+
+    return totals
+  })
 
   async function setPokemon(newPokemon: PokeAPI.Pokemon, position?: TeamSlot['position']) {
     // fetch species for variants
@@ -140,6 +164,7 @@ export const useTeamStore = defineStore('team', () => {
     teamName,
     trainerName,
     team,
+    statTotals: statTotals.value,
     setPokemon,
     at,
     clearPokemon,

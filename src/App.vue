@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { toPng } from 'html-to-image'
 
 import PokemonSearch from '@/components/PokemonSearch.vue'
@@ -12,8 +12,16 @@ import TeamTypeChart from './components/TeamTypeChart.vue'
 import PokedexScreen from './components/pokedex/PokedexScreen.vue'
 import TeamStatChart from './components/TeamStatChart.vue'
 import { PhInfo } from '@phosphor-icons/vue'
+import { statTotals } from '@/helpers'
 
 const team = useTeamStore()
+const totals = computed(() => statTotals(team.team))
+const sorted = computed(() => {
+  return Object.entries(totals.value).sort((a, b) => a[1] - b[1])
+})
+const strongest = computed(() => sorted.value[5]!)
+const weakest = computed(() => sorted.value[0]!)
+console.log({ strongest: strongest.value, weakest: weakest.value })
 
 const pokedexRef = ref<HTMLElement | null>(null)
 const nameWidth = ref(565)
@@ -93,6 +101,14 @@ const savePokedexPng = async () => {
               >
               <div class="h-[164px] w-[164px]">
                 <TeamStatChart />
+              </div>
+              <div class="flex gap-1 text-xs font-semibold uppercase">
+                <span class="rounded bg-lime-500 px-1 py-0.5 text-lime-900"
+                  >{{ strongest[0] }}: {{ strongest[1] }}</span
+                >
+                <span class="rounded bg-red-300 px-1 py-0.5 text-red-900"
+                  >{{ weakest[0] }}: {{ weakest[1] }}</span
+                >
               </div>
             </div>
           </PokedexScreen>
